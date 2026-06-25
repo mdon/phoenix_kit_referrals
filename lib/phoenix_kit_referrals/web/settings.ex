@@ -18,7 +18,7 @@ defmodule PhoenixKitReferrals.Web.Settings do
 
     socket =
       socket
-      |> assign(:page_title, "Referral Codes")
+      |> assign(:page_title, "Referrals")
       |> assign(:project_title, project_title)
       |> assign(:referral_codes_enabled, referral_codes_config.enabled)
       |> assign(:referral_codes_required, referral_codes_config.required)
@@ -46,15 +46,15 @@ defmodule PhoenixKitReferrals.Web.Settings do
           |> put_flash(
             :info,
             if(new_required,
-              do: "Referral codes are now required",
-              else: "Referral codes are now optional"
+              do: "Referrals are now required",
+              else: "Referrals are now optional"
             )
           )
 
         {:noreply, socket}
 
       {:error, _changeset} ->
-        socket = put_flash(socket, :error, "Failed to update referral codes requirement setting")
+        socket = put_flash(socket, :error, "Failed to update referrals requirement setting")
         {:noreply, socket}
     end
   end
@@ -67,12 +67,12 @@ defmodule PhoenixKitReferrals.Web.Settings do
             socket =
               socket
               |> assign(:max_uses_per_code, max_uses)
-              |> put_flash(:info, "Maximum uses per code updated to #{max_uses}")
+              |> put_flash(:info, "Maximum uses per referral updated to #{max_uses}")
 
             {:noreply, socket}
 
           {:error, _changeset} ->
-            socket = put_flash(socket, :error, "Failed to update maximum uses per code")
+            socket = put_flash(socket, :error, "Failed to update maximum uses per referral")
             {:noreply, socket}
         end
 
@@ -90,12 +90,12 @@ defmodule PhoenixKitReferrals.Web.Settings do
             socket =
               socket
               |> assign(:max_codes_per_user, max_codes)
-              |> put_flash(:info, "Maximum codes per user updated to #{max_codes}")
+              |> put_flash(:info, "Maximum referrals per user updated to #{max_codes}")
 
             {:noreply, socket}
 
           {:error, _changeset} ->
-            socket = put_flash(socket, :error, "Failed to update maximum codes per user")
+            socket = put_flash(socket, :error, "Failed to update maximum referrals per user")
             {:noreply, socket}
         end
 

@@ -3,9 +3,9 @@
       <h1 class="text-xl sm:text-2xl lg:text-3xl font-bold text-base-content">{@page_title}</h1>
       <p class="text-sm text-base-content/60 mt-0.5">
         <%= if @mode == :new do %>
-          Create a new referral code for user registration
+          Create a new referral for user registration
         <% else %>
-          Edit referral code details
+          Edit referral details
         <% end %>
       </p>
     </.admin_page_header>
@@ -26,7 +26,7 @@
             <.input
               field={form[:code]}
               type="text"
-              label="Referral Code *"
+              label="Code *"
               placeholder="Enter code or generate random"
               required
             />
@@ -45,7 +45,7 @@
               field={form[:description]}
               type="text"
               label="Description *"
-              placeholder="Brief description of this referral code"
+              placeholder="Brief description of this referral"
               required
             />
           </div>
@@ -135,7 +135,7 @@
 
             <label class="mt-2 label">
               <span class="label-text-alt text-base-content/70">
-                Optional: Search and select a user who will benefit from this code
+                Optional: Search and select a user who will benefit from this referral
               </span>
             </label>
           </div>
@@ -147,12 +147,12 @@
               type="number"
               min="1"
               label="Maximum Uses *"
-              placeholder="How many times can this code be used?"
+              placeholder="How many times can this referral be used?"
               required
             />
             <label class="mt-2 label">
               <span class="label-text-alt text-base-content/70">
-                Set how many users can register using this code
+                Set how many users can register using this referral
               </span>
             </label>
           </div>
@@ -176,7 +176,7 @@
             <.checkbox field={form[:status]} label="Is active?" />
 
             <span class="mt-2 label text-base-content/70">
-              Inactive codes cannot be used for registration
+              Inactive referrals cannot be used for registration
             </span>
           </div>
 
@@ -188,7 +188,7 @@
               disabled={!@changeset.valid?}
             >
               <PhoenixKitWeb.Components.Core.Icons.icon_check class="w-4 h-4 mr-2" />
-              {if @mode == :edit, do: "Update Code", else: "Create Code"}
+              {if @mode == :edit, do: "Update Referral", else: "Create Referral"}
             </button>
             <button
               type="button"

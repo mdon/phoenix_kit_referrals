@@ -641,7 +641,7 @@ defmodule PhoenixKitReferrals do
       key: "referrals",
       label: "Referrals",
       icon: "hero-gift",
-      description: "Referral codes, tracking, and reward programs"
+      description: "Referrals, tracking, and reward programs"
     }
   end
 
@@ -650,7 +650,7 @@ defmodule PhoenixKitReferrals do
     [
       Tab.new!(
         id: :admin_users_referral_codes,
-        label: "Referral Codes",
+        label: "Referrals",
         icon: "hero-ticket",
         path: "users/referral-codes",
         priority: 260,

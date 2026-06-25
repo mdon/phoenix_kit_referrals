@@ -285,13 +285,13 @@ defmodule PhoenixKitReferrals.Web.Form do
     case Referrals.create_code(code_params_with_creator) do
       {:ok, _code} ->
         socket
-        |> put_flash(:info, "Referral code created successfully!")
+        |> put_flash(:info, "Referral created successfully!")
         |> push_navigate(to: Routes.path("/admin/users/referral-codes"))
 
       {:error, changeset} ->
         socket
         |> assign(:changeset, changeset)
-        |> put_flash(:error, "Failed to create referral code. Please check the errors below.")
+        |> put_flash(:error, "Failed to create referral. Please check the errors below.")
     end
   end
 
@@ -299,17 +299,17 @@ defmodule PhoenixKitReferrals.Web.Form do
     case Referrals.update_code(socket.assigns.code, code_params) do
       {:ok, _code} ->
         socket
-        |> put_flash(:info, "Referral code updated successfully!")
+        |> put_flash(:info, "Referral updated successfully!")
         |> push_navigate(to: Routes.path("/admin/users/referral-codes"))
 
       {:error, changeset} ->
         socket
         |> assign(:changeset, changeset)
-        |> put_flash(:error, "Failed to update referral code. Please check the errors below.")
+        |> put_flash(:error, "Failed to update referral. Please check the errors below.")
     end
     |> then(&{:noreply, &1})
   end
 
-  defp page_title(:new), do: "New Referral Code"
-  defp page_title(:edit), do: "Edit Referral Code"
+  defp page_title(:new), do: "New Referral"
+  defp page_title(:edit), do: "Edit Referral"
 end

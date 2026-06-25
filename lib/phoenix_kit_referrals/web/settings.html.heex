@@ -45,10 +45,10 @@
               <.icon name="hero-scale" class="w-6 h-6" /> Usage Limits
             </h2>
 
-            <%!-- Max Uses Per Code --%>
+            <%!-- Max Uses Per Referral --%>
             <div class="form-control mb-4">
               <label class="label">
-                <span class="label-text text-lg font-semibold">Maximum Uses Per Code</span>
+                <span class="label-text text-lg font-semibold">Maximum Uses Per Referral</span>
               </label>
               <div class="input-group">
                 <input
@@ -65,20 +65,20 @@
               </div>
               <label class="label">
                 <span class="label-text-alt text-base-content/70">
-                  How many times each referral code can be used (1-10,000)
+                  How many times each referral can be used (1-10,000)
                 </span>
               </label>
             </div>
 
-            <%!-- Max Codes Per User --%>
+            <%!-- Max Referrals Per User --%>
             <div class="form-control">
               <label class="label">
-                <span class="label-text text-lg font-semibold">Maximum Codes Per User</span>
+                <span class="label-text text-lg font-semibold">Maximum Referrals Per User</span>
               </label>
               <div class="input-group">
                 <input
                   type="number"
-                  placeholder="Enter max codes"
+                  placeholder="Enter max referrals"
                   class="input input-bordered w-full max-w-xs"
                   value={@max_codes_per_user}
                   min="1"
@@ -90,7 +90,7 @@
               </div>
               <label class="label">
                 <span class="label-text-alt text-base-content/70">
-                  How many referral codes each user can create (1-1,000)
+                  How many referrals each user can create (1-1,000)
                 </span>
               </label>
             </div>
@@ -116,9 +116,9 @@
                     {if @referral_codes_required, do: "Yes", else: "No"}
                   </span>
                 </p>
-                <p>Max uses per code: <span class="font-semibold">{@max_uses_per_code}</span></p>
+                <p>Max uses per referral: <span class="font-semibold">{@max_uses_per_code}</span></p>
                 <p>
-                  Max codes per user: <span class="font-semibold">{@max_codes_per_user}</span>
+                  Max referrals per user: <span class="font-semibold">{@max_codes_per_user}</span>
                 </p>
               <% end %>
             </div>
