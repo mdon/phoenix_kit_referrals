@@ -21,6 +21,7 @@ defmodule PhoenixKitReferrals.Web.List do
     socket =
       socket
       |> assign(:page_title, "Referral Codes")
+      |> assign(:page_subtitle, "Issue and track referral codes for user registration")
       |> assign(:project_title, project_title)
       |> assign(:codes, codes)
       |> assign(:system_stats, system_stats)
