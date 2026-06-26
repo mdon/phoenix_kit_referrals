@@ -665,7 +665,7 @@ defmodule PhoenixKitReferrals do
         level: :admin,
         parent: :admin_users,
         permission: "referrals",
-        gettext_backend: PhoenixKitWeb.Gettext
+        gettext_backend: PhoenixKitReferrals.Gettext
       )
     ]
   end
@@ -682,7 +682,7 @@ defmodule PhoenixKitReferrals do
         level: :admin,
         parent: :admin_settings,
         permission: "referrals",
-        gettext_backend: PhoenixKitWeb.Gettext
+        gettext_backend: PhoenixKitReferrals.Gettext
       )
     ]
   end
