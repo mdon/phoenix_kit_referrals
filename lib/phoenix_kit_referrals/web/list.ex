@@ -131,7 +131,7 @@ defmodule PhoenixKitReferrals.Web.List do
         class="btn btn-sm btn-error"
         phx-click="delete_code"
         phx-value-uuid={@code.uuid}
-        onclick={"return confirm('#{gettext("Are you sure you want to delete this referral?")}')"}
+        data-confirm={gettext("Are you sure you want to delete this referral?")}
       >
         <.icon name="hero-trash" class="w-4 h-4" />
       </button>
