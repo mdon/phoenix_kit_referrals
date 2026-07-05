@@ -141,6 +141,35 @@ The module renders daisyUI/Tailwind templates, so it implements
 source discovery scans the listed apps' templates; without this, Tailwind would purge
 classes unique to this module.
 
+## JS Hook Bundle — Referral Link Capture
+
+This package has no router/signup UI/OAuth code of its own (those live in core
+`phoenix_kit`), so URL-based referral capture (`?ref=CODE`, `?referral=CODE` alias -> localStorage ->
+auto-filled at signup, including OAuth) is implemented entirely as a client-side
+script rather than a server-side change:
+
+- `js_sources/0` (`lib/phoenix_kit_referrals.ex`, **no `@impl`** — older core releases
+  don't declare this callback; annotating it would warn under
+  `--warnings-as-errors`) ships `priv/static/assets/phoenix_kit_referrals.js` under the
+  global `PhoenixKitReferralsHooks`. Core's `:phoenix_kit_js_sources` compiler folds it
+  into the host's `phoenix_kit_modules.js`, already spread into `window.PhoenixKitHooks`
+  / LiveSocket by the host's `app.js` (wired once by `mix phoenix_kit.install` /
+  `mix phoenix_kit.update` — no manual host action needed). Mirrors `phoenix_kit_crm`.
+- The script is plain script, not a `phx-hook` — a referral link can land on any page
+  of the host site, so there's no single DOM element to attach a hook to. It runs on
+  script load, `DOMContentLoaded`, and `phx:page-loading-stop` (LiveView navigation).
+- It relies only on markup core already renders and already reads server-side —
+  `document.getElementById("referral_code")` (the plain `<input>` in
+  `registration.html.heex` / `magic_link_registration.html.heex`, read via
+  `params["referral_code"]`) and `a[href*="/users/auth/"]` (OAuth provider links in
+  `oauth_buttons.ex`; the OAuth controller already reads `params["referral_code"]` into
+  the session — see `PhoenixKitWeb.Users.OAuth.handle_oauth_request/4`). **If core ever
+  renames/removes the `referral_code` field id or the OAuth path prefix, this script
+  silently stops autofilling — it fails open, not loudly.**
+- First-touch attribution: an existing, still-valid stored code is never overwritten by
+  a later `?ref=`/`?referral=` link. TTL defaults to 30 days; a host can override via
+  `window.PhoenixKitReferralsConfig = {ttlDays: N}` before the bundle loads.
+
 ## Local cross-repo development
 
 `phoenix_kit` resolves from Hex by default. To build or test against a **local checkout**

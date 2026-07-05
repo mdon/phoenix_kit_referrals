@@ -25,6 +25,9 @@ step is required.
   users, recent activity) for admin dashboards.
 - **Signup integration** — when enabled, the registration / OAuth / magic-link flows
   offer (or require) a code and record its usage on success.
+- **Referral link capture** — share a link like `https://yourapp.com/?ref=CODE`;
+  a visitor's code is remembered (localStorage, 30-day TTL, first-touch) and
+  auto-filled at signup later, including through OAuth (Google/Apple/GitHub/Facebook).
 - **Auto-discovery** — implements the `PhoenixKit.Module` behaviour; PhoenixKit finds it
   at startup with zero config and exposes an enable/disable toggle and a permission key.
 
@@ -60,6 +63,40 @@ automatically. Enable it from **Admin → Modules**.
 - **Signup integration** — PhoenixKit core dispatches to this module at runtime by module
   key, so core has no compile-time dependency on it: with the module absent the field
   simply doesn't appear.
+
+## Referral link capture
+
+Entering a referral code by hand is friction most users skip, so this module also
+accepts codes via URL:
+
+1. Share `https://yourapp.com/?ref=CODE` (any page — it doesn't have to be the signup
+   page). `?referral=CODE` is also accepted as an alias.
+2. A small script shipped by this module (see [JS integration](#js-integration) below)
+   stores the code in the visitor's `localStorage` for 30 days and strips the param
+   from the address bar. If the visitor already has a stored code, a later link won't
+   overwrite it (first-touch attribution).
+3. Whenever the visitor reaches registration, magic-link registration, or clicks an
+   OAuth provider button, the stored code is applied automatically — the existing
+   `referral_code` form field is filled in, or `?referral_code=` is appended to the
+   OAuth link. From there it flows through PhoenixKit core's existing
+   registration/OAuth handling exactly as if the visitor had typed it in.
+
+No database schema changes or core `phoenix_kit` changes are required — capture and
+autofill are pure client-side script working with fields/links core already renders
+and already reads server-side.
+
+### JS integration
+
+Ships a prebuilt script via `PhoenixKit.Module.js_sources/0`, the same mechanism
+`phoenix_kit_crm` uses. Any host that has already installed `phoenix_kit`'s JS
+integration (done once by `mix phoenix_kit.install` / `mix phoenix_kit.update`) picks
+this up automatically on the next compile — no manual `app.js` or layout edits needed.
+
+To change the capture window, set before the bundle loads:
+
+```html
+<script>window.PhoenixKitReferralsConfig = {ttlDays: 14};</script>
+```
 
 ## Settings
 

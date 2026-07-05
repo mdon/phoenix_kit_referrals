@@ -48,6 +48,17 @@ defmodule PhoenixKitReferralsTest do
     end
   end
 
+  describe "js_sources/0" do
+    test "ships the referral-capture bundle for the host's JS hook aggregate" do
+      assert [%{app: app, file: file, global: global}] = PhoenixKitReferrals.js_sources()
+
+      assert app == :phoenix_kit_referrals
+      assert file == "static/assets/phoenix_kit_referrals.js"
+      assert global == "PhoenixKitReferralsHooks"
+      assert File.exists?(Path.join(:code.priv_dir(:phoenix_kit_referrals), file))
+    end
+  end
+
   describe "permission_metadata/0" do
     test "returns a map with required fields, keyed by module_key" do
       assert %{key: key, label: label, icon: icon, description: desc} =
