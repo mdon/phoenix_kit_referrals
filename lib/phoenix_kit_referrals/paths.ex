@@ -13,19 +13,27 @@ defmodule PhoenixKitReferrals.Paths do
 
   alias PhoenixKit.Utils.Routes
 
-  @base "/admin/users/referral-codes"
+  # Own top-level admin section (`/admin/referral-codes`), not nested under
+  # Users — deliberate, see the "Referrals" top-level tab in admin_tabs/0.
+  # Overview and Codes are siblings under this base, neither a prefix of the
+  # other, so viewing one doesn't also prefix-match the other's nav tab.
+  @base "/admin/referral-codes"
 
-  @doc "Referral list / management page (under admin Users)."
+  @doc "Referral program overview / stats dashboard."
+  @spec overview() :: String.t()
+  def overview, do: Routes.path("#{@base}/overview")
+
+  @doc "Referral codes list / management page."
   @spec index() :: String.t()
-  def index, do: Routes.path(@base)
+  def index, do: Routes.path("#{@base}/codes")
 
   @doc "New-referral form."
   @spec new() :: String.t()
-  def new, do: Routes.path("#{@base}/new")
+  def new, do: Routes.path("#{@base}/codes/new")
 
   @doc "Edit form for the referral addressed by `code_uuid`."
   @spec edit(String.t()) :: String.t()
-  def edit(code_uuid), do: Routes.path("#{@base}/edit/#{code_uuid}")
+  def edit(code_uuid), do: Routes.path("#{@base}/codes/edit/#{code_uuid}")
 
   @doc "Referrals settings page (under admin Settings)."
   @spec settings() :: String.t()

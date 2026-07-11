@@ -1,0 +1,200 @@
+<div class="flex flex-col w-full p-4">
+  <%= if @config.enabled do %>
+    <%!-- Stats Cards --%>
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+      <PhoenixKitWeb.Components.Core.StatCard.stat_card
+        compact={true}
+        rounded="xl"
+        value={@system_stats.total_codes}
+        title={gettext("Total Referrals")}
+        subtitle={gettext("All referrals")}
+      >
+        <:icon>
+          <.icon name="hero-ticket" class="w-5 h-5" />
+        </:icon>
+      </PhoenixKitWeb.Components.Core.StatCard.stat_card>
+
+      <PhoenixKitWeb.Components.Core.StatCard.stat_card
+        compact={true}
+        rounded="xl"
+        value={@system_stats.active_codes}
+        title={gettext("Active Referrals")}
+        subtitle={gettext("Currently available")}
+      >
+        <:icon>
+          <.icon name="hero-check-circle" class="w-5 h-5" />
+        </:icon>
+      </PhoenixKitWeb.Components.Core.StatCard.stat_card>
+
+      <PhoenixKitWeb.Components.Core.StatCard.stat_card
+        compact={true}
+        rounded="xl"
+        value={@system_stats.total_usage}
+        title={gettext("Total Uses")}
+        subtitle={gettext("Registration count")}
+      >
+        <:icon>
+          <.icon name="hero-chart-bar" class="w-5 h-5" />
+        </:icon>
+      </PhoenixKitWeb.Components.Core.StatCard.stat_card>
+
+      <PhoenixKitWeb.Components.Core.StatCard.stat_card
+        compact={true}
+        rounded="xl"
+        value={@system_stats.codes_with_usage}
+        title={gettext("Used Referrals")}
+        subtitle={gettext("Referrals with activity")}
+      >
+        <:icon>
+          <.icon name="hero-arrow-trending-up" class="w-5 h-5" />
+        </:icon>
+      </PhoenixKitWeb.Components.Core.StatCard.stat_card>
+    </div>
+
+    <%!-- Top Referrals --%>
+    <div class="card bg-base-100 shadow-xl mb-6">
+      <div class="card-body">
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="card-title text-xl">{gettext("Top Referrals")}</h2>
+          <.link navigate={Paths.index()} class="btn btn-sm btn-outline">
+            {gettext("View all")}
+          </.link>
+        </div>
+
+        <%= if @top_codes == [] do %>
+          <div class="text-center py-8 text-base-content/60">
+            {gettext("No referral codes have been used yet.")}
+          </div>
+        <% else %>
+          <.table_default
+            variant="zebra"
+            items={@top_codes}
+            card_title={fn code -> code.code end}
+            card_fields={
+              fn code ->
+                [
+                  %{label: gettext("Description"), value: code.description},
+                  %{label: gettext("Usage"), value: "#{code.number_of_uses} / #{code.max_uses}"},
+                  %{label: gettext("Beneficiary"), value: beneficiary_email(code)}
+                ]
+              end
+            }
+          >
+            <.table_default_header>
+              <.table_default_row>
+                <.table_default_header_cell>{gettext("Code")}</.table_default_header_cell>
+                <.table_default_header_cell>{gettext("Description")}</.table_default_header_cell>
+                <.table_default_header_cell>{gettext("Usage")}</.table_default_header_cell>
+                <.table_default_header_cell>{gettext("Beneficiary")}</.table_default_header_cell>
+                <.table_default_header_cell>{gettext("Status")}</.table_default_header_cell>
+              </.table_default_row>
+            </.table_default_header>
+            <.table_default_body>
+              <%= for code <- @top_codes do %>
+                <.table_default_row>
+                  <.table_default_cell>
+                    <div class="font-mono text-lg font-bold">{code.code}</div>
+                  </.table_default_cell>
+                  <.table_default_cell>
+                    <div class="max-w-xs truncate">{code.description}</div>
+                  </.table_default_cell>
+                  <.table_default_cell>
+                    <div class="flex items-center">
+                      <div class="text-sm">{code.number_of_uses} / {code.max_uses}</div>
+                      <div class="ml-2 w-20 bg-gray-200 rounded-full h-2">
+                        <div
+                          class="bg-blue-600 h-2 rounded-full"
+                          style={"width: #{min(100, (code.number_of_uses / code.max_uses) * 100)}%"}
+                        >
+                        </div>
+                      </div>
+                    </div>
+                  </.table_default_cell>
+                  <.table_default_cell>
+                    <div class="text-sm">{beneficiary_email(code)}</div>
+                  </.table_default_cell>
+                  <.table_default_cell>
+                    <.code_status_badge code={code} />
+                  </.table_default_cell>
+                </.table_default_row>
+              <% end %>
+            </.table_default_body>
+          </.table_default>
+        <% end %>
+      </div>
+    </div>
+
+    <%!-- Recent Activity --%>
+    <div class="card bg-base-100 shadow-xl">
+      <div class="card-body">
+        <h2 class="card-title text-xl mb-4">{gettext("Recent Activity")}</h2>
+
+        <%= if @recent_usage == [] do %>
+          <div class="text-center py-8 text-base-content/60">
+            {gettext("No referral codes have been used yet.")}
+          </div>
+        <% else %>
+          <.table_default
+            variant="zebra"
+            items={@recent_usage}
+            card_title={&usage_code_string/1}
+            card_fields={
+              fn usage ->
+                [
+                  %{label: gettext("Used by"), value: usage_user_email(usage)},
+                  %{
+                    label: gettext("Date"),
+                    value: Calendar.strftime(usage.date_used, "%b %d, %Y %H:%M")
+                  }
+                ]
+              end
+            }
+          >
+            <.table_default_header>
+              <.table_default_row>
+                <.table_default_header_cell>{gettext("Code")}</.table_default_header_cell>
+                <.table_default_header_cell>{gettext("Used by")}</.table_default_header_cell>
+                <.table_default_header_cell>{gettext("Date")}</.table_default_header_cell>
+              </.table_default_row>
+            </.table_default_header>
+            <.table_default_body>
+              <%= for usage <- @recent_usage do %>
+                <.table_default_row>
+                  <.table_default_cell>
+                    <div class="font-mono text-sm font-bold">{usage_code_string(usage)}</div>
+                  </.table_default_cell>
+                  <.table_default_cell>
+                    <div class="text-sm">{usage_user_email(usage)}</div>
+                  </.table_default_cell>
+                  <.table_default_cell>
+                    <div class="text-sm">
+                      {Calendar.strftime(usage.date_used, "%b %d, %Y %H:%M")}
+                    </div>
+                  </.table_default_cell>
+                </.table_default_row>
+              <% end %>
+            </.table_default_body>
+          </.table_default>
+        <% end %>
+      </div>
+    </div>
+  <% else %>
+    <%!-- System Disabled Message --%>
+    <div class="card bg-base-100 shadow-xl">
+      <div class="card-body text-center py-12">
+        <.icon name="hero-lock-closed" class="h-16 w-16 mx-auto text-base-content/40 mb-4" />
+        <h3 class="text-xl font-semibold text-base-content mb-2">
+          {gettext("Referrals Disabled")}
+        </h3>
+        <p class="text-base-content/70 max-w-md mx-auto mb-4">
+          {gettext(
+            "Referrals are currently disabled. Enable them in the Modules page to start creating and managing referrals."
+          )}
+        </p>
+        <.link navigate={PhoenixKit.Utils.Routes.path("/admin/modules")} class="btn btn-primary">
+          {gettext("Go to Modules")}
+        </.link>
+      </div>
+    </div>
+  <% end %>
+</div>

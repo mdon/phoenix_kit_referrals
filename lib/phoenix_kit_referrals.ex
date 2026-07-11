@@ -731,14 +731,53 @@ defmodule PhoenixKitReferrals do
   @impl PhoenixKit.Module
   def admin_tabs do
     [
+      # Top-level section (mirrors phoenix_kit_ai's :admin_ai). Kept separate
+      # from :admin_users on purpose: unlike user management, this is a
+      # module we intend to open up to non-Owner/Admin roles that only hold
+      # the "referrals" permission, so it can't live inside a parent section
+      # gated on full user-management access.
       Tab.new!(
-        id: :admin_users_referral_codes,
+        id: :admin_referrals,
         label: "Referrals",
-        icon: "hero-ticket",
-        path: "users/referral-codes",
-        priority: 260,
+        icon: "hero-gift",
+        # Not a real page — Overview and Codes below are true siblings, so
+        # the parent link redirects to whichever has lower priority
+        # (mirrors phoenix_kit_ai's :admin_ai).
+        path: "referral-codes",
+        priority: 600,
         level: :admin,
-        parent: :admin_users,
+        permission: "referrals",
+        match: :prefix,
+        group: :admin_modules,
+        subtab_display: :when_active,
+        highlight_with_subtabs: false,
+        redirect_to_first_subtab: true,
+        gettext_backend: PhoenixKitReferrals.Gettext
+      ),
+      Tab.new!(
+        id: :admin_referrals_overview,
+        label: "Overview",
+        icon: "hero-chart-bar",
+        # Sibling of Codes below, deliberately NOT nested under it (or vice
+        # versa) — either nesting would make prefix-based active-tab
+        # matching highlight both tabs at once for one of the two pages.
+        path: "referral-codes/overview",
+        priority: 601,
+        level: :admin,
+        parent: :admin_referrals,
+        permission: "referrals",
+        gettext_backend: PhoenixKitReferrals.Gettext
+      ),
+      Tab.new!(
+        id: :admin_referrals_codes,
+        label: "Codes",
+        icon: "hero-ticket",
+        # No "users/" segment — this module has its own top-level section,
+        # not nested under Admin > Users.
+        path: "referral-codes/codes",
+        priority: 602,
+        level: :admin,
+        parent: :admin_referrals,
         permission: "referrals",
         gettext_backend: PhoenixKitReferrals.Gettext
       )
@@ -839,6 +878,41 @@ defmodule PhoenixKitReferrals do
       total_usage: total_usage,
       codes_with_usage: codes_with_usage
     }
+  end
+
+  @doc """
+  Gets the codes with the most recorded uses, for an admin leaderboard.
+
+  Only codes with at least one use are returned. Preloads `:creator` and
+  `:beneficiary_user` for display.
+
+  ## Examples
+
+      iex> PhoenixKitReferrals.top_codes(5)
+      [%PhoenixKitReferrals{}, ...]
+  """
+  def top_codes(limit \\ 5) when is_integer(limit) and limit > 0 do
+    from(r in __MODULE__,
+      where: r.number_of_uses > 0,
+      order_by: [desc: r.number_of_uses],
+      limit: ^limit,
+      preload: [:creator, :beneficiary_user]
+    )
+    |> repo().all()
+  end
+
+  @doc """
+  Gets the most recent referral code usage records system-wide, for an admin
+  activity feed.
+
+  ## Examples
+
+      iex> PhoenixKitReferrals.list_recent_usage(10)
+      [%PhoenixKitReferrals.ReferralCodeUsage{}, ...]
+  """
+  def list_recent_usage(limit \\ 10) when is_integer(limit) and limit > 0 do
+    ReferralCodeUsage.recent(limit)
+    |> repo().all()
   end
 
   ## --- Private Helpers ---

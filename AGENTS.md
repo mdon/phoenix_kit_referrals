@@ -118,9 +118,16 @@ add a `migration_module/0` or migration files here. New columns/tables go into a
 
 - **Module key** is `"referrals"` and must be consistent across `module_key/0`,
   `permission_metadata/0` (`:key`), and tab `:permission` fields.
-- **Tab IDs**: `:admin_users_referral_codes` (Users tab) and `:admin_settings_referrals`
-  (Settings tab).
-- **URL paths** use hyphens: `/admin/users/referral-codes`, `/admin/settings/referral-codes`.
+- **Tab IDs**: `:admin_referrals` is its own top-level section (NOT nested under
+  `:admin_users` — this module is meant to eventually be reachable by non-Owner/Admin
+  roles holding only the `"referrals"` permission, which a section gated on full
+  user-management access can't allow), with subtabs `:admin_referrals_overview` and
+  `:admin_referrals_codes`. `:admin_settings_referrals` is the separate Settings tab.
+- **URL paths**: `/admin/referral-codes/overview` and `/admin/referral-codes/codes`
+  (+ `/new`, `/edit/:code_uuid`) are siblings under `/admin/referral-codes` — deliberately
+  neither nested inside the other, since prefix-based active-tab matching would otherwise
+  highlight both tabs at once for one of the two pages. `/admin/settings/referral-codes`
+  is separate, under Settings.
 - **Navigation paths**: always go through `PhoenixKitReferrals.Paths` (which wraps
   `PhoenixKit.Utils.Routes.path/1`) — never hardcode or use relative paths. Core
   destinations outside this module (e.g. `/admin/modules`) may call `Routes.path/1`

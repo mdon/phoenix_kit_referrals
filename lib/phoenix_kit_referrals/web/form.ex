@@ -41,8 +41,10 @@ defmodule PhoenixKitReferrals.Web.Form do
   end
 
   def handle_event("validate_code", params, socket) do
-    # Extract referrals params (matches form name from changeset)
-    code_params = Map.get(params, "referrals", %{})
+    # Form name comes from the changeset's struct module (%PhoenixKitReferrals{}),
+    # not the "referrals" module key — Phoenix derives it via
+    # Phoenix.Naming.resource_name/1, e.g. `to_form(changeset).name`.
+    code_params = Map.get(params, "phoenix_kit_referrals", %{})
 
     # Add beneficiary if selected (dual-write both integer and UUID)
     updated_params =
@@ -71,8 +73,10 @@ defmodule PhoenixKitReferrals.Web.Form do
   end
 
   def handle_event("save_code", params, socket) do
-    # Extract referrals params (matches form name from changeset)
-    code_params = Map.get(params, "referrals", %{})
+    # Form name comes from the changeset's struct module (%PhoenixKitReferrals{}),
+    # not the "referrals" module key — Phoenix derives it via
+    # Phoenix.Naming.resource_name/1, e.g. `to_form(changeset).name`.
+    code_params = Map.get(params, "phoenix_kit_referrals", %{})
 
     # Ensure beneficiary is included if selected (dual-write both integer and UUID)
     updated_code_params =
@@ -212,12 +216,14 @@ defmodule PhoenixKitReferrals.Web.Form do
   defp load_form_data(socket) do
     code = socket.assigns.code || %Referrals{}
 
-    # For new codes, initialize with empty changeset
+    # For new codes, initialize with empty changeset (except max_uses, pre-filled
+    # from the system default so admins aren't forced to think of a number —
+    # still freely editable).
     # For edit mode, initialize changeset with current code data to pre-populate form
     initial_params =
       case socket.assigns.mode do
         :new ->
-          %{}
+          %{"max_uses" => Referrals.get_max_uses_per_code()}
 
         :edit ->
           %{

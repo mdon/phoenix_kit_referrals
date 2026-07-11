@@ -6,7 +6,36 @@ project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- **Referral program overview page** (`/admin/referral-codes/overview`,
+  `PhoenixKitReferrals.Web.Overview`) — a read-only admin dashboard with
+  system-wide stats, a top-codes-by-usage leaderboard, and a recent-activity
+  feed across every code. Adds `PhoenixKitReferrals.top_codes/1`,
+  `list_recent_usage/1`, and a `:user` association on
+  `ReferralCodeUsage` (via the existing `used_by_uuid` column, no migration).
+- **Admin nav: "Referrals" is now its own top-level section** (`:admin_referrals`,
+  mirroring `phoenix_kit_ai`'s `:admin_ai`), no longer nested under Users, and its
+  URLs no longer live under `/admin/users/*` either — Overview and Codes (formerly
+  labeled "Referrals") now live at `/admin/referral-codes/overview` and
+  `/admin/referral-codes/codes` (+ `/new`, `/edit/:code_uuid`), true siblings so
+  neither prefix-matches the other's nav tab. Deliberate: unlike user management,
+  this module is meant to eventually be reachable by non-Owner/Admin roles holding
+  only the `"referrals"` permission, so it can't live inside a section (or URL
+  namespace) gated on full user-management access.
+- **New-code form pre-fills "Maximum Uses"** with the system default
+  (`get_max_uses_per_code/0`, 100 unless configured otherwise) instead of leaving
+  a required field blank — still freely editable.
+
 ### Fixed
+
+- **The new/edit form silently dropped every typed field.** `validate_code` and
+  `save_code` read submitted params under the key `"referrals"`, but the form's
+  actual param key — derived from the `%PhoenixKitReferrals{}` changeset's struct
+  module — is `"phoenix_kit_referrals"`. Every `phx-change`/`phx-submit` therefore
+  rebuilt the changeset from an empty map, silently discarding the generated code
+  and anything typed, and (once `:action` was set) surfacing "can't be blank" on
+  every required field.
 
 - **`use_code/2` could crash user registration.** Recording a use ran the code
   through the full `changeset/2`, which re-validates `max_uses` against the

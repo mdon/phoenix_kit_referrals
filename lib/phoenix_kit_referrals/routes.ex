@@ -17,16 +17,23 @@ defmodule PhoenixKitReferrals.Routes do
         as: :referral_codes_settings_localized
       )
 
-      live("/admin/users/referral-codes", PhoenixKitReferrals.Web.List, :index,
+      live(
+        "/admin/referral-codes/overview",
+        PhoenixKitReferrals.Web.Overview,
+        :index,
+        as: :referral_codes_overview_localized
+      )
+
+      live("/admin/referral-codes/codes", PhoenixKitReferrals.Web.List, :index,
         as: :referral_codes_list_localized
       )
 
-      live("/admin/users/referral-codes/new", PhoenixKitReferrals.Web.Form, :new,
+      live("/admin/referral-codes/codes/new", PhoenixKitReferrals.Web.Form, :new,
         as: :referral_codes_new_localized
       )
 
       live(
-        "/admin/users/referral-codes/edit/:code_uuid",
+        "/admin/referral-codes/codes/edit/:code_uuid",
         PhoenixKitReferrals.Web.Form,
         :edit,
         as: :referral_codes_edit_localized
@@ -46,16 +53,23 @@ defmodule PhoenixKitReferrals.Routes do
         as: :referral_codes_settings
       )
 
-      live("/admin/users/referral-codes", PhoenixKitReferrals.Web.List, :index,
+      live(
+        "/admin/referral-codes/overview",
+        PhoenixKitReferrals.Web.Overview,
+        :index,
+        as: :referral_codes_overview
+      )
+
+      live("/admin/referral-codes/codes", PhoenixKitReferrals.Web.List, :index,
         as: :referral_codes_list
       )
 
-      live("/admin/users/referral-codes/new", PhoenixKitReferrals.Web.Form, :new,
+      live("/admin/referral-codes/codes/new", PhoenixKitReferrals.Web.Form, :new,
         as: :referral_codes_new
       )
 
       live(
-        "/admin/users/referral-codes/edit/:code_uuid",
+        "/admin/referral-codes/codes/edit/:code_uuid",
         PhoenixKitReferrals.Web.Form,
         :edit,
         as: :referral_codes_edit

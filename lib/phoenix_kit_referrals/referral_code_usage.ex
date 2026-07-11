@@ -52,6 +52,13 @@ defmodule PhoenixKitReferrals.ReferralCodeUsage do
       references: :uuid,
       type: UUIDv7
     )
+
+    belongs_to(:user, PhoenixKit.Users.Auth.User,
+      foreign_key: :used_by_uuid,
+      references: :uuid,
+      define_field: false,
+      type: UUIDv7
+    )
   end
 
   @doc """
@@ -99,6 +106,26 @@ defmodule PhoenixKitReferrals.ReferralCodeUsage do
     from(u in __MODULE__,
       where: u.used_by_uuid == ^user_uuid,
       order_by: [desc: u.date_used]
+    )
+  end
+
+  @doc """
+  Gets the most recent usage records system-wide, across every code.
+
+  Preloads `:referral_code` and `:user` for display purposes (e.g. an admin
+  activity feed). Returns a query that can be executed to get usage records
+  ordered by date_used (most recent first).
+
+  ## Examples
+
+      iex> ReferralCodeUsage.recent(10) |> Repo.all()
+      [%ReferralCodeUsage{}, ...]
+  """
+  def recent(limit \\ 10) when is_integer(limit) and limit > 0 do
+    from(u in __MODULE__,
+      order_by: [desc: u.date_used],
+      limit: ^limit,
+      preload: [:referral_code, :user]
     )
   end
 

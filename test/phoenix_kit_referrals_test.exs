@@ -72,14 +72,33 @@ defmodule PhoenixKitReferralsTest do
   end
 
   describe "admin_tabs/0" do
-    test "contributes the referral-codes tab under the Users section" do
-      assert [%{} = tab] = PhoenixKitReferrals.admin_tabs()
-      assert tab.id == :admin_users_referral_codes
-      assert tab.parent == :admin_users
-      assert tab.permission == "referrals"
-      assert tab.level == :admin
-      # No live_view — routes come from route_module/0.
-      assert tab.live_view == nil
+    test "contributes its own top-level section, not nested under Users" do
+      assert [top, overview, codes] = PhoenixKitReferrals.admin_tabs()
+
+      assert top.id == :admin_referrals
+      assert top.parent == nil
+      assert top.redirect_to_first_subtab == true
+      refute String.contains?(top.path, "users")
+
+      assert overview.id == :admin_referrals_overview
+      assert overview.parent == :admin_referrals
+      refute String.contains?(overview.path, "users")
+
+      assert codes.id == :admin_referrals_codes
+      assert codes.parent == :admin_referrals
+      refute String.contains?(codes.path, "users")
+
+      # Siblings, neither nested under the other — prefix-based active-tab
+      # matching would otherwise highlight both for one of the two pages.
+      refute String.starts_with?(overview.path, codes.path <> "/")
+      refute String.starts_with?(codes.path, overview.path <> "/")
+
+      for tab <- [top, overview, codes] do
+        assert tab.permission == "referrals"
+        assert tab.level == :admin
+        # No live_view — routes come from route_module/0.
+        assert tab.live_view == nil
+      end
     end
   end
 
