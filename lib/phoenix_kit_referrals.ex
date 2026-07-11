@@ -716,7 +716,7 @@ defmodule PhoenixKitReferrals do
 
   @impl PhoenixKit.Module
   @doc "Module version, shown on the admin Modules page. Keep in sync with `mix.exs`."
-  def version, do: "0.3.0"
+  def version, do: "0.4.0"
 
   @impl PhoenixKit.Module
   def permission_metadata do

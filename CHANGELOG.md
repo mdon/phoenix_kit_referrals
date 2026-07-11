@@ -6,6 +6,8 @@ project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-07-11
+
 ### Added
 
 - **Referral program overview page** (`/admin/referral-codes/overview`,
